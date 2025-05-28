@@ -5,10 +5,12 @@ using System.Net.Http.Json;
 
 namespace Business.Services;
 
-public class AccountService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager) : IAccountService
+public class AccountService(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, SignInManager<IdentityUser> signInManager) : IAccountService
 {
     private readonly UserManager<IdentityUser> _userManager = userManager;
     private readonly RoleManager<IdentityRole> _roleManager = roleManager;
+    private readonly SignInManager<IdentityUser> _signInManager = signInManager;
+
 
     public async Task<AccountServiceResult> CreateUser(CreateAccountRequest request)
     {
@@ -25,6 +27,14 @@ public class AccountService(UserManager<IdentityUser> userManager, RoleManager<I
             ? new AccountServiceResult { Success = true }
             : new AccountServiceResult { Success = false, Error = "Error" };
     }
+    public async Task<AccountServiceResult> LogInUser(LoginUserRequest request)
+    {
+        var result = await _signInManager.PasswordSignInAsync(request.Email, request.Password,false,false);
+
+        return result.Succeeded
+            ? new AccountServiceResult { Success = true }
+            : new AccountServiceResult { Success = false, Error = "Error" };
+    }
 
     public async Task<AccountServiceResult> ExistsByEmail(ExistsRequest request)
     {
@@ -35,7 +45,7 @@ public class AccountService(UserManager<IdentityUser> userManager, RoleManager<I
             return new AccountServiceResult { Success = true, Message = "Email already exists" };
         }
 
-        return new AccountServiceResult { Success = false };
+        return new AccountServiceResult { Success = false, Message = "Email doesn't exists"};
     }
 
     public async Task<AccountServiceResult> ConfirmEmailAsync(string email)
@@ -52,4 +62,6 @@ public class AccountService(UserManager<IdentityUser> userManager, RoleManager<I
             : new AccountServiceResult { Success = false, Error = "Could not confirm email" };
     }
 
+
 }
+    

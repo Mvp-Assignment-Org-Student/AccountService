@@ -17,13 +17,22 @@ public class AccountController(IAccountService accountService) : ControllerBase
         var result = await _accountService.CreateUser(request);
         return result.Success ? Ok(result) : BadRequest(result);
     }
-        
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login(LoginUserRequest request)
+    {
+        var result = await _accountService.LogInUser(request);
+
+        return result.Success ? Ok(result) : BadRequest(result);
+
+    }
+
     [HttpPost("exists/email")]
     public async Task<IActionResult> EmailExists(ExistsRequest request)
     {
-        var result = await _accountService.ExistsByEmail(request); 
+        var result = await _accountService.ExistsByEmail(request);
 
-        return result.Success ? Ok(result) : BadRequest(); 
+        return result.Success ? BadRequest() : Ok(result);
     }
 
     [HttpPost("confirm-email")]
