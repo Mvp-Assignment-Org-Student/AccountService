@@ -27,6 +27,15 @@ public class AccountController(IAccountService accountService) : ControllerBase
 
     }
 
+    [HttpPost("logout")]
+    public async Task<IActionResult> LoginOut()
+    {
+        var result = await _accountService.LogOutUser();
+
+        return Ok();
+
+    }
+
     [HttpPost("exists/email")]
     public async Task<IActionResult> EmailExists(ExistsRequest request)
     {

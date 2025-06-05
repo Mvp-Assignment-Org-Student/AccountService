@@ -8,4 +8,5 @@ public interface IAccountService
     Task<AccountServiceResult> CreateUser(CreateAccountRequest request);
     Task<AccountServiceResult> ExistsByEmail(ExistsRequest request);
     Task<AccountServiceResult> LogInUser(LoginUserRequest request);
+    Task<AccountServiceResult> LogOutUser();
 }
