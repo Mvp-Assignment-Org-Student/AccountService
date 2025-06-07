@@ -8,16 +8,27 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Azure.Identity;
 
 var builder = WebApplication.CreateBuilder(args);
+var keyVaultUrl = new Uri("https://keyvault-mvp-student.vault.azure.net/");
+builder.Configuration.AddAzureKeyVault(keyVaultUrl, new DefaultAzureCredential());
+
+Console.WriteLine("JWT Issuer: " + builder.Configuration["Jwt:Issuer"]);
+Console.WriteLine("DB Conn: " + builder.Configuration["AzureDbConnection"]);
+
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddSwaggerGen();
 
 
+
+
 builder.Services.AddScoped<IAccountService, AccountService>();
-builder.Services.AddDbContext<DataContext>(x => x.UseSqlServer(builder.Configuration.GetConnectionString("AzureDbConnection")));
+builder.Services.AddDbContext<DataContext>(x =>
+    x.UseSqlServer(builder.Configuration["AzureDbConnection"]));
+
 builder.Services.AddIdentity<IdentityUser, IdentityRole>(x => {
 
     x.User.RequireUniqueEmail = true;
@@ -70,3 +81,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+
